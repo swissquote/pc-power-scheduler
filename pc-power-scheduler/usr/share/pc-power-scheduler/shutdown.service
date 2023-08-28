@@ -1,0 +1,13 @@
+[Unit]
+Description=Shuts the computer down
+DefaultDependencies=no
+After=basic.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/shutdown-popup
+TimeoutStartSec=0
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target

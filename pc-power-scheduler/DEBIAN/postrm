@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+function clean_service() {
+  service=$1
+  systemctl stop $service
+  systemctl disable $service
+  rm /etc/systemd/system/$service
+}
+
+if [[ -e /etc/systemd/system/shutdown.service ]]; then
+  clean_service shutdown.service
+fi
+
+if [[ -e /etc/systemd/system/shutdown.timer ]]; then
+  clean_service shutdown.timer
+fi
+
+if [[ -e /etc/systemd/system/wol.service ]]; then
+  clean_service wol.service
+fi
+
+if [[ -e /usr/local/sbin/shutdown-popup ]]; then
+  rm /usr/local/sbin/shutdown-popup
+fi
+
+if [[ -e /usr/local/sbin/set-wakeup-time ]]; then
+  rm /usr/local/sbin/set-wakeup-time
+fi
+
+if [[ -e /usr/local/sbin/pc-power-scheduler-service-updater ]]; then
+  rm /usr/local/sbin/pc-power-scheduler-service-updater
+fi
+
+if [[ -e /etc/systemd/system/wakeup.service ]]; then
+  clean_service wakeup.service
+fi
+
+if [[ -e /etc/systemd/system/pc-power-scheduler.path ]]; then
+  clean_service pc-power-scheduler.path
+fi
+
+if [[ -e /etc/systemd/system/pc-power-scheduler.service ]]; then
+  clean_service pc-power-scheduler.service
+fi
+
+if [ "$1" = purge ]; then
+  if [[ -e /etc/default/pc-power-scheduler ]]; then
+    rm /etc/default/pc-power-scheduler
+  fi
+fi
+
+systemctl daemon-reload
+systemctl reset-failed

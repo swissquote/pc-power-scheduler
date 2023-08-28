@@ -1,0 +1,11 @@
+[Unit]
+Description=Shuts the computer down at $SHUTDOWNTIME
+
+[Timer]
+Unit=shutdown.service
+OnCalendar=$DAYS $SHUTDOWNTIME
+AccuracySec=1s
+Persistent=true
+
+[Install]
+WantedBy=timers.target

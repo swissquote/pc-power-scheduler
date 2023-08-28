@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+. /etc/default/pc-power-scheduler
+
+# display a warning
+#  $1     username to show the question to
+#  $2     display to show the question on
+#  $3     the time remaining before shutdown, in minute
+function sdwarn() {
+
+  . /etc/default/pc-power-scheduler
+
+  local username=$1
+  local display=$2
+  local remaining_time=$3
+
+  echo "Notifying $username on $display"
+
+  wakeuptime=$(date --date "@$(cat /sys/class/rtc/rtc0/wakealarm)")
+  remaining_time_minute=$(echo ${remaining_time}/60 |bc)
+  when=$(date -d "+ $remaining_time_minute minutes" +%R )
+  notification "$username" "$display" "PC power scheduler" "Computer will going to $METHOD at $when, and will wake up on $wakeuptime!"
+}
+
+#  $1     username to show the question to
+#  $2     display to show the question on
+#  $3     title
+#  $4     text to show
+function notification() {
+
+  DISPLAY="$2" sudo -E -u "$1" notify-send \
+   -u critical \
+   -i /usr/share/icons/Humanity/actions/32/system-shutdown.svg \
+  "$3" \
+  "$4"
+}
+
+FUNC=$(declare -f sdwarn notification)
+
+REMAINING_TIME=600
+
+for u in $(who | awk '{print $1}' | sort | uniq); do
+  sessions=$(loginctl list-sessions --no-legend | grep $u | awk '{print $1}')
+
+  for session in $sessions; do
+
+    display=$(loginctl show-session $sessions -p Display | cut -d= -f2)
+
+    if [ $display == ":" ]; then
+        display=$(who -u | awk -e  '$8 ~ /\((:[0-9]|tty.)\)/ {print $8}' | tr -d '()' |sort -u)
+    else
+        display=':0'
+    fi
+
+    DBUS_ADDRESS="unix:path=/run/user/$(id -u $u)/bus"
+    export DBUS_SESSION_BUS_ADDRESS=${DBUS_ADDRESS}
+    sudo -u $u DISPLAY=${display} \
+        DBUS_SESSION_BUS_ADDRESS=${DBUS_ADDRESS} \
+        bash -c "$FUNC; sdwarn \"$u\" \"$display\" $REMAINING_TIME"
+    done
+done
+
+
+(sleep $REMAINING_TIME; systemctl $METHOD) &
