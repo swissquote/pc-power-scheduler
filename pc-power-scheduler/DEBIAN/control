@@ -1,0 +1,9 @@
+Package: pc-power-scheduler
+Version: 0.0.11
+Section: utils
+Priority: standard
+Architecture:  amd64
+Depends: ethtool, gettext-base, gawk
+Homepage: https://github.com/swissquote/pc-power-scheduler
+Maintainer: RedNo2 <redno2@users.noreply.github.com>
+Description: A daemon to schedule your shutdown and wake up your personal desktop

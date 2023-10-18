@@ -1,0 +1,22 @@
+## This is the configuration file for pc-power-scheduler daemon
+
+# Enable or disable power management (disable shutdown and wakeup actions)
+# [ True, False ]
+ENABLE='True'
+
+# The method you want to use it for the halt
+# [ poweroff, suspend, hibernate ]
+METHOD='poweroff'
+
+# Which day you want to enable the automatic shutdown
+# locale's abbreviated weekday name, separate by comma (e.g., 'Sun,Tue')
+DAYS='Mon,Tue,Wed,Thu,Fri'
+
+# Specify the time you want to shutdown up your computer
+# Time format HH:MM
+SHUTDOWNTIME='19:30'
+
+# Specify the time you want to wake up your computer (the day after the shutdown)
+# Time format HH:MM
+WAKEUPTIME='07:00'
+

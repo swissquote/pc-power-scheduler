@@ -1,0 +1,9 @@
+[Unit]
+Description=Enable Wake On Lan
+
+[Service]
+Type=oneshot
+ExecStart=ethtool --change ${NICNAME} wol g
+
+[Install]
+WantedBy=basic.target

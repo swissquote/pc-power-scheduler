@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# update the daemon from the default config file /etc/default/pc-power-scheduler
+
+SHUTDOWN_WOL_PATH='/usr/share/pc-power-scheduler'
+SERVICE_PATH='/etc/systemd/system/'
+
+set -a
+. /etc/default/pc-power-scheduler
+
+if [[ "$ENABLE" =~ [tT]rue ]]; then
+
+  envsubst < $SHUTDOWN_WOL_PATH/shutdown.timer.tmpl > $SERVICE_PATH/shutdown.timer
+
+  /usr/local/sbin/set-wakeup-time
+
+  systemctl daemon-reload
+  systemctl restart wakeup.service
+  systemctl enable shutdown.timer
+  systemctl stop shutdown.timer
+  systemctl start shutdown.timer
+  systemctl stop shutdown.service
+
+else
+  systemctl stop shutdown.timer
+  echo 0 > /sys/class/rtc/rtc0/wakealarm
+fi

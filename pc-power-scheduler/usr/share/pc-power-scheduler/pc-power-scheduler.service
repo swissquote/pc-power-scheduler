@@ -1,0 +1,13 @@
+[Unit]
+Description=Wake up and shutdown the computer at defined time
+#Requires=shutdown.timer wakeup.service
+#PartOf=shutdown.service wakeup.service
+After=shutdown.timer wakeup.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/pc-power-scheduler-service-updater
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target

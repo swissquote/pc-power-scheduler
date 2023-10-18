@@ -1,0 +1,17 @@
+name: Release to nexus
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  deploy:
+
+    uses: cicd/workflows/.github/workflows/debian-package-deploy.yaml@master
+
+    secrets:
+      APT_USER: ${{ secrets.APT_USER }}
+      APT_PASSWORD: ${{ secrets.APT_PASSWORD }}
+
+    with:
+      directory: pc-power-scheduler

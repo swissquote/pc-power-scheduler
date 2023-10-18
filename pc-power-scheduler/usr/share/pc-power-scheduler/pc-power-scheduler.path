@@ -1,0 +1,5 @@
+[Path]
+PathModified=/etc/default/pc-power-scheduler
+
+[Install]
+WantedBy=multi-user.target

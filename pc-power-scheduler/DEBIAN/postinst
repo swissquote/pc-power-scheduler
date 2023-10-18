@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+SOURCE_DIR=/usr/share/pc-power-scheduler
+
+mkdir -p /usr/local/sbin/
+
+# Set default configuration
+if [[ ! -f /etc/default/pc-power-scheduler ]]; then
+  cp $SOURCE_DIR/pc-power-scheduler /etc/default/
+fi
+
+# Set systemd services
+cp $SOURCE_DIR/shutdown.service /etc/systemd/system/
+cp $SOURCE_DIR/wakeup.service /etc/systemd/system/
+cp $SOURCE_DIR/pc-power-scheduler.path /etc/systemd/system/
+cp $SOURCE_DIR/pc-power-scheduler.service /etc/systemd/system/
+
+
+# Set bin
+cp $SOURCE_DIR/shutdown-popup /usr/local/sbin/
+chmod +x /usr/local/sbin/shutdown-popup
+
+cp $SOURCE_DIR/set-wakeup-time /usr/local/sbin/set-wakeup-time
+chmod +x /usr/local/sbin/set-wakeup-time
+
+cp $SOURCE_DIR/pc-power-scheduler-service-updater /usr/local/sbin/pc-power-scheduler-service-updater
+chmod +x /usr/local/sbin/pc-power-scheduler-service-updater
+bash $SOURCE_DIR/pc-power-scheduler-service-updater
+
+# Manage systemd services
+systemctl daemon-reload
+
+systemctl disable shutdown.service
+systemctl enable shutdown.timer
+systemctl start shutdown.timer
+
+systemctl enable wakeup.service
+systemctl start wakeup.service
+
+systemctl enable pc-power-scheduler.service
+systemctl start pc-power-scheduler.service
+systemctl enable pc-power-scheduler.path
+systemctl start pc-power-scheduler.path
+#systemctl enable wol.service

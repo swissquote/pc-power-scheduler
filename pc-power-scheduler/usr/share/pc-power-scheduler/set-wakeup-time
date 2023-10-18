@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+. /etc/default/pc-power-scheduler
+
+DAYS=(${DAYS//,/ })
+i=0
+
+RANDOM_LOWER_BOUND=0
+RANDOM_UPPER_BOUND=30
+RANDOM_OFFSET=$(shuf --head-count=1 --input-range=$RANDOM_LOWER_BOUND-$RANDOM_UPPER_BOUND)
+
+TODAY=$(LC_TIME=en_US.UTF8 date +%a)
+for element in ${DAYS[@]}; do
+  NEXTDAY=${DAYS[++i]}
+
+  if [ "${element}" == "$TODAY" ]; then
+
+    if [ -z "$NEXTDAY" ]; then
+      NEXTDAY=${DAYS[0]}
+    fi
+
+    DESIRED_WAKEUPTIME=$(date --date "$NEXTDAY $WAKEUPTIME:00" +%s)
+    REAL_WAKEUP="$(($DESIRED_WAKEUPTIME-$RANDOM_OFFSET))"
+    echo 0 > /sys/class/rtc/rtc0/wakealarm
+    echo "$REAL_WAKEUP" > /sys/class/rtc/rtc0/wakealarm
+    echo "Next wake up time, programed for $(date --date "@$DESIRED_WAKEUPTIME") will occur at $(date --date "@$REAL_WAKEUP") [@$RANDOM_OFFSET offset]"
+    break
+  fi
+done

@@ -1,0 +1,11 @@
+[Unit]
+Description=Wake up the computer at defined time
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/set-wakeup-time
+StandardOutput=journal
+
+[Install]
+WantedBy=default.target
